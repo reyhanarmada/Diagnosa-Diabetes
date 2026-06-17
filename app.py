@@ -12,13 +12,11 @@ def load_artifacts():
         scaler = pickle.load(f)
     with open('model_lr.pkl', 'rb') as f:
         model_lr = pickle.load(f)
-    with open('model_nb.pkl', 'rb') as f:
-        model_nb = pickle.load(f)
     with open('feature_names.pkl', 'rb') as f:
         feature_names = pickle.load(f)
-    return scaler, model_lr, model_nb, feature_names
+    return scaler, model_lr, feature_names
 
-scaler, model_lr, model_nb, feature_names = load_artifacts()
+scaler, model_lr, feature_names = load_artifacts()
 
 # ---------- UI ----------
 st.title("🩺 Sistem Diagnosa Diabetes")
@@ -43,12 +41,6 @@ with col2:
 
 st.divider()
 
-model_choice = st.radio(
-    "Pilih Model Prediksi:",
-    ["Logistic Regression", "Naive Bayes"],
-    horizontal=True
-)
-
 if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
     input_dict = {
         'Pregnancies': pregnancies,
@@ -64,13 +56,8 @@ if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
     input_df = pd.DataFrame([input_dict])[feature_names]
     input_scaled = scaler.transform(input_df)
 
-    if model_choice == "Logistic Regression":
-        model = model_lr
-    else:
-        model = model_nb
-
-    prediction = model.predict(input_scaled)[0]
-    proba = model.predict_proba(input_scaled)[0]
+    prediction = model_lr.predict(input_scaled)[0]
+    proba = model_lr.predict_proba(input_scaled)[0]
 
     st.divider()
     if prediction == 1:
@@ -82,13 +69,13 @@ if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
     c1.metric("Probabilitas Tidak Diabetes", f"{proba[0]*100:.2f}%")
     c2.metric("Probabilitas Diabetes", f"{proba[1]*100:.2f}%")
 
-    st.caption(f"Model digunakan: **{model_choice}**")
+    st.caption("Model digunakan: **Logistic Regression**")
     st.caption("⚠️ Hasil ini hanya untuk tujuan edukasi/akademik, bukan diagnosis medis resmi.")
 
 st.divider()
 with st.expander("ℹ️ Tentang Model"):
     st.markdown("""
-    - **Logistic Regression** dan **Naive Bayes** dilatih menggunakan GridSearchCV
+    - **Logistic Regression** dilatih menggunakan GridSearchCV
     - Data preprocessing: nilai 0 pada kolom medis (Glucose, BloodPressure, SkinThickness, Insulin, BMI)
       diganti dengan median, lalu seluruh fitur distandardisasi (StandardScaler), dan SMOTE
       digunakan untuk menyeimbangkan data latih.
