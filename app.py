@@ -10,13 +10,13 @@ st.set_page_config(page_title="Diagnosa Diabetes", page_icon="🩺", layout="cen
 def load_artifacts():
     with open('scaler.pkl', 'rb') as f:
         scaler = pickle.load(f)
-    with open('model_lr.pkl', 'rb') as f:
-        model_lr = pickle.load(f)
+    with open('model_rf.pkl', 'rb') as f:
+        model_rf = pickle.load(f)
     with open('feature_names.pkl', 'rb') as f:
         feature_names = pickle.load(f)
-    return scaler, model_lr, feature_names
+    return scaler, model_rf, feature_names
 
-scaler, model_lr, feature_names = load_artifacts()
+scaler, model_rf, feature_names = load_artifacts()
 
 # ---------- UI ----------
 st.title("🩺 Sistem Diagnosa Diabetes")
@@ -56,8 +56,8 @@ if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
     input_df = pd.DataFrame([input_dict])[feature_names]
     input_scaled = scaler.transform(input_df)
 
-    prediction = model_lr.predict(input_scaled)[0]
-    proba = model_lr.predict_proba(input_scaled)[0]
+    prediction = model_rf.predict(input_scaled)[0]
+    proba = model_rf.predict_proba(input_scaled)[0]
 
     st.divider()
     if prediction == 1:
@@ -69,13 +69,14 @@ if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
     c1.metric("Probabilitas Tidak Diabetes", f"{proba[0]*100:.2f}%")
     c2.metric("Probabilitas Diabetes", f"{proba[1]*100:.2f}%")
 
-    st.caption("Model digunakan: **Logistic Regression**")
+    st.caption("Model digunakan: **Random Forest**")
     st.caption("⚠️ Hasil ini hanya untuk tujuan edukasi/akademik, bukan diagnosis medis resmi.")
 
 st.divider()
 with st.expander("ℹ️ Tentang Model"):
     st.markdown("""
-    - **Logistic Regression** dilatih menggunakan GridSearchCV
+    - **Random Forest** dilatih menggunakan GridSearchCV (n_estimators=200, max_depth=None)
+    - F1-Score (macro): **0.7618** — terbaik dari 3 model yang diuji (LR, RF, XGBoost)
     - Data preprocessing: nilai 0 pada kolom medis (Glucose, BloodPressure, SkinThickness, Insulin, BMI)
       diganti dengan median, lalu seluruh fitur distandardisasi (StandardScaler), dan SMOTE
       digunakan untuk menyeimbangkan data latih.
