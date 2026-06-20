@@ -75,10 +75,19 @@ if st.button("🔍 Prediksi", use_container_width=True, type="primary"):
 st.divider()
 with st.expander("ℹ️ Tentang Model"):
     st.markdown("""
-    - **Random Forest** dilatih menggunakan GridSearchCV (n_estimators=200, max_depth=None)
-    - F1-Score (macro): **0.7618** — terbaik dari 3 model yang diuji (LR, RF, XGBoost)
-    - Data preprocessing: nilai 0 pada kolom medis (Glucose, BloodPressure, SkinThickness, Insulin, BMI)
-      diganti dengan median, lalu seluruh fitur distandardisasi (StandardScaler), dan SMOTE
-      digunakan untuk menyeimbangkan data latih.
-    - Dataset: Pima Indians Diabetes Dataset
+    - **Random Forest** dipilih sebagai model terbaik berdasarkan hasil evaluasi setelah proses preprocessing, SMOTE, dan optimasi hyperparameter menggunakan GridSearchCV.
+    - Hyperparameter terbaik yang diperoleh adalah:
+      - n_estimators = 300
+      - max_depth = None
+      - min_samples_split = 2
+      - min_samples_leaf = 1
+    - F1-Score (macro): **0.8626**
+    - Perbandingan performa model:
+      - Logistic Regression: 0.7399
+      - Random Forest: 0.8626
+      - XGBoost: 0.8543
+    - Random Forest dipilih karena menghasilkan nilai F1-Score Macro tertinggi serta memiliki kemampuan yang baik dalam menangani hubungan non-linear dan mengurangi risiko overfitting melalui mekanisme ensemble learning.
+    - Data preprocessing meliputi penggantian nilai 0 pada atribut medis (Glucose, BloodPressure, SkinThickness, Insulin, dan BMI) menggunakan median, dilanjutkan dengan standardisasi fitur menggunakan StandardScaler.
+    - Teknik SMOTE digunakan untuk menyeimbangkan distribusi kelas pada data latih sebelum proses pelatihan model.
+    - Dataset yang digunakan adalah Pima Indians Diabetes Dataset.
     """)
